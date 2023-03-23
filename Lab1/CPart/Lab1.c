@@ -103,6 +103,7 @@ void emptyIntArray(int *arr, int arrLength){
     }
 }
 
+//testar mais uma vez o upload
 int findFirstEmptyIdx(int *arr, int arrLength){
     int arrL = sizeof(arr)/sizeof(int);
     int firstEmptyIndex = -1;
@@ -212,6 +213,11 @@ void changeFileName(char *input_file_name, char *output_file_name){
     }
 }
 
+
+//ESTA FUNÇÃO NÃO É FINAL DE TODO!!!! ESTA FUNÇÃO FOI ALTERADA IMENSO PELO AI! Eu ainda
+//vou escrever esta função de uma maneira que faça sentido para as nossas capacidades agora que entendo mais.
+//A original que fizemos hoje nao estava a funcionar por muitas razões e eu depois quando tiver tempo para comentar
+//tudo explico em pormenor.
 void negative_file( char *input_file_name, char *output_file_name) {
     //LER O FICHEIRO EM BINÁRIO
     FILE *fp = fopen(input_file_name, "rb");
