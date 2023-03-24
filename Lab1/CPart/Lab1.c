@@ -3,8 +3,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define MAX_FILE_SIZE 1000 //leitura maxima de uma ficheiro de 1000 Bytes
-
+#define int ASCII7SIZE = 127;
 
 //intToBinary é só um algoritmo base que converte um valor inteiro num array de char (no fundo um string) que representa o valor inteiro em binario.
 //A parte do algoritmo pode ser facilmente encontrado na net (tanto que foi daí que veio), no entanto como não sei como retornar um array fiz com que a função altera-se um array que recebe como input
@@ -103,72 +102,116 @@ void emptyIntArray(int *arr, int arrLength){
     }
 }
 
-//testar mais uma vez o upload
+//Segue a mesma teoria que a função intInIntArray
 int findFirstEmptyIdx(int *arr, int arrLength){
     int arrL = sizeof(arr)/sizeof(int);
-    int firstEmptyIndex = -1;
     for(int i=0; i<arrL; i++){
         if(arr[i]!=-1){
-            firstEmptyIndex = i;
-            break;
+            return i;
         };
     };
-    return firstEmptyIndex;
+    return -1;
 }
 
+/*
+    Esta função já está dividida entre as linhas de código então vou seguir a mesma estrutura para fazer a explicação:
+    LEITURA DO FICHEIRO - Para realizar a leitura do ficheiro começamos por realizar a declaração da variavel fp como 'FILE'. 
+    'FILE *fp' faz com que fp possa ser usado como ponteiro de ficheiros. Por sua vez nós definimos fp como ponteiro do ficheiro
+    colocado como input com o fopen(file_name) o string "r" no fim corresponde a um dos diversos códigos existentes para esta função.
+    Aqui "r" permite apenas a leitura do ficheiro que é necessáriamente o que precisamos neste caso.
+    Mais informação: https://www.programiz.com/c-programming/c-file-input-output
+    De modo a realizar a leitura do ficheiro começámos por utilizar um troço de código muito importante nestas últimas duas funções da 
+    parte do Lab em C. fseek() é uma função que permite procurar determinadas posições consoante o termo colocado como último input.
+    SEEK_END como input faz com que seja procurada a última posição do ponteiro e SEEK_SET faz com que retorne à posição original do 
+    ponteiro. 
+    Mais informação: https://www.tutorialspoint.com/c_standard_library/c_function_fseek.htm
+    ftell() apenas guarda numa variavel, neste caso, fpL, a posição do ponteiro dado. Desta forma temos agora o ponteiro inicial e final que
+    por sua vez nos permite obter a dimensão do ficheiro que por sua vez nos permite navegar todos os termos do array onde vamos colocar os
+    dados lidos do ficheiro.
+    COLOCAÇÃO E CONTAGEM - Seguidamente criamos dois arrays distintos, asciiLetter e asciiCount, com dimensão de 127 [hardcoded através da
+    constante global ASCII7SIZE], valor correspondente ao número de símbolos 
+    existentes em ASCII-7 (ascii utilizado em C). Estas vão funcionar como HashMap/Linked List uma vez que os id's da data guardada são partilhados
+    (o idx de 'a' em asciiLetter é o mesmo idx que 'a' em asciiCount). Estas duas listas vão ser ambas passadas em emptyIntArray() que coloca todas as posições do
+    array a -1 (vai ser explicado o porquê da necessidade de ser -1 e não zero para a frente) para ser possível realizar a contagem dos símbolos presentes.
+    SIDENOTE - É possível reduzir a dimensao destes dois arrays para 125 se for adicionada uma condição para filtragem de ' ' e ENTER [seria adicionado
+    na linha 172]
+    VERIFICAÇÃO DO MAIOR/MENOR - aqui tal como o nome indica realizamos a contagem e para isso temos duas variáveis cruciais em qualquer linguagem
+    para a realização desta operaçã, ou seja, maior e menor. Menor e maior começam como o primeiro valor ímpossivel (máximo seria 126 por isso usamos 127 no
+    caso de menor e -1 em maior porque o mínimo seria 0). Seguidamente temos os arrays menorArr e menorArr da dimensão necessária para caso 
+    necessário guardar todos os símbolos como símbolos mais frequentes e menos frequentes (no caso em que isto acontece o mais frequente é também
+    o menos frequente por isso a dimensão deve sempre ser esta para responder sem falha ao pedido). Por fim mas não menos importante temos maiorIdx
+    e menorIdx que guardam os indexes das posições em que podemos escrever/adicionar os indexes (asciiLetter e asciiCount) de símbolos que sejam tão frequentes ou tão infrequentes
+    como o que estamos agora a considerar maior ou menor. Seguidamente passamos em todas as posições de asciiCount que sejam diferentes de 0 (ou seja inexistentes
+    no ficheiro) de modo a obter a data que queremos relativa a mais frequentes e menos frequentes. Uma vez que o método de verificação é análogo vou explicar 
+    apenas a relação de maior: Começamos por verificar se o asciiCount atual é superior ao símbolo mais frequente e caso o seja colocamos todas as posições do 
+    maiorArr a -1 (index fora do intervalo possível de indexes o que faz com que possa ser identificado se se está a referir a uma posição "vazia" ou temos um indexe com valor
+    neste contexto). Seguidamente colocamos o maiorIdx a 0 para que possamos começar a escrever mais uma vez os termos com maior contagem dentro do ficheiro. 
+    Com estes podemos agora definir o maiorArr[maiorIdx] como o index atual do novo maior valor (este agora é o único que aqui se encontra). Por fim incrementamos o idx
+    por motivos obvios. A restante condição necessária corresponde a se este valor for igual ao que já temos na contagem de maior. Nesse caso não é "esvaziado" o o array
+    e apenas adicionamos o index correspondente a este valor ao maiorArr[maiorIdx] e seguidamente incrementamos maiorIdx.
+    PRINT DOS RESULTADOS - Filtragem básica dos arrays maiorArr e menorArr e caso o array em questão tiver apenas um elemento dar print desse apenas com uma frase 
+    sintaxicamente apropriada e caso seja multipla é realizado um for() para que realize print apropriado sintaxicamente e apresente também todos os items mais e menos
+    frequentes.
+    Importante notar que um documento sem qualquer símbolo, ou seja, vazio, não realizaria qualquer tipo de Print.
+*/
 
 void most_frequent_symbol( char *file_name ){
     //LEITURA DO FICHEIRO
     FILE *fp;
     fp = fopen(file_name, "r");
-    int asciiArray[MAX_FILE_SIZE]; // array to hold contents of file
-    int fpL = fread(asciiArray, sizeof(int), MAX_FILE_SIZE, fp);
+    fseek(fp, 0, SEEK_END);
+    int fpL = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    int asciiArray[fpL];
+    int fpL = fread(asciiArray, sizeof(int), fpL, fp);
     if (fp == NULL)
    {
-      perror("Error while opening the file.\n");
+      perror("Error reading the file.\n");
    };
    //COLOCAÇÃO E CONTAGEM
-   int asciiLetter[127]; //ASCII-7 size
-   emptyIntArray(asciiLetter, 127);
-   int asciiCount[127]; //ASCII-7 size
-   emptyIntArray(asciiCount, 127);
-   for(int i=0; i<127; i++){
+   int asciiLetter[ASCII7SIZE]; //ASCII-7 size
+   emptyIntArray(asciiLetter, ASCII7SIZE);
+   int asciiCount[ASCII7SIZE]; //ASCII-7 size
+   emptyIntArray(asciiCount, ASCII7SIZE);
+   for(int i=0; i<ASCII7SIZE; i++){
         if(intInIntArray(asciiArray, fpL, asciiLetter[i])) asciiCount[asciiArray[i]]++;
         else{
-            int temp = findFirstEmptyIdx(asciiLetter, 127);
+            int temp = findFirstEmptyIdx(asciiLetter, ASCII7SIZE);
             asciiLetter[temp] = asciiArray[i];
             asciiCount[temp] = 1;
         };
    };
    //VERIFICAÇÃO DE MAIOR/MENOR
-    int menor = 127;
-    int maior = 0;
-    int maiorArr[127];
+    int menor = ASCII7SIZE;
+    int maior = -1;
+    int maiorArr[ASCII7SIZE];
     int maiorIdx = 0;
-    int menorArr[127];
+    int menorArr[ASCII7SIZE];
     int menorIdx = 0;
-    for(int i=0; i<127; i++){
-        if(asciiCount[i]>asciiCount[maior]){
-            emptyIntArray(maiorArr, 127);
-            maiorIdx=0;
-            maiorArr[maiorIdx] = asciiLetter[i];
-            maiorIdx++;
-            maior = i;
-        };
-        if(asciiCount[i]==asciiCount[maior]){
-            maiorArr[maiorIdx] = asciiLetter[i];
-            maiorIdx++;
-        }
-        if(asciiCount[i]<asciiCount[menor]){
-            menorIdx = 0;
-            emptyIntArray(menorArr, 127);
-            menorArr[menorIdx] = asciiLetter[i];
-            menorIdx++;
-            menor = i;
-        }
-        if(asciiCount[i]==asciiCount[menor]){
-            maiorArr[menorIdx] = asciiLetter[i];
-            menorIdx++;
+    for(int i=0; i<ASCII7SIZE; i++){
+        if(asciiCount[i]!=-1){
+            if(asciiCount[i]>asciiCount[maior]){
+                emptyIntArray(maiorArr, ASCII7SIZE);
+                maiorIdx=0;
+                maiorArr[maiorIdx] = asciiLetter[i];
+                maiorIdx++;
+                maior = i;
+            };
+            if(asciiCount[i]==asciiCount[maior]){
+                maiorArr[maiorIdx] = asciiLetter[i];
+                maiorIdx++;
+            }
+            if(asciiCount[i]<asciiCount[menor]){
+                menorIdx = 0;
+                emptyIntArray(menorArr, ASCII7SIZE);
+                menorArr[menorIdx] = asciiLetter[i];
+                menorIdx++;
+                menor = i;
+            }
+            if(asciiCount[i]==asciiCount[menor]){
+                maiorArr[menorIdx] = asciiLetter[i];
+                menorIdx++;
+            }
         }
     }
     //PRINT DE RESULTADOS
@@ -204,6 +247,9 @@ void most_frequent_symbol( char *file_name ){
     }
 }
 
+/*
+    Esta função existe apenas para simplificar a leitura da função negative_file() uma vez que todo o processo é realizado através da função rename().
+*/
 void changeFileName(char *input_file_name, char *output_file_name){
     int result = rename(input_file_name, output_file_name);
     if (result == 0) {
