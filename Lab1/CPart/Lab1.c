@@ -271,12 +271,9 @@ void negative_file( char *input_file_name, char *output_file_name) {
       perror("Error while opening the file.\n");
       exit(EXIT_FAILURE);
     }
-    
-    // Obter o tamanho do ficheiro
     fseek(fp, 0, SEEK_END);
     int fpL = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    
     // Ler o ficheiro para uma matriz de inteiros
     int notFp[fpL];
     for(int i = 0; i < fpL; i++){
@@ -307,3 +304,9 @@ int main() {
     negative_file(teste, teste1);
     //negative_file(teste1, teste);
 }
+
+/*
+Holly cow o novo live album dos bcnr é tao bom
+They really said "this is a touching live concert recorded with highest care and quality possible "
+"Drop it."
+*/
