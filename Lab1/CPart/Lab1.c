@@ -2,8 +2,9 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-#define int ASCII7SIZE = 127;
+#define ASCII7SIZE 127
 
 //intToBinary é só um algoritmo base que converte um valor inteiro num array de char (no fundo um string) que representa o valor inteiro em binario.
 //A parte do algoritmo pode ser facilmente encontrado na net (tanto que foi daí que veio), no entanto como não sei como retornar um array fiz com que a função altera-se um array que recebe como input
@@ -163,7 +164,6 @@ void most_frequent_symbol( char *file_name ){
     int fpL = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     int asciiArray[fpL];
-    int fpL = fread(asciiArray, sizeof(int), fpL, fp);
     if (fp == NULL)
    {
       perror("Error reading the file.\n");
@@ -247,50 +247,43 @@ void most_frequent_symbol( char *file_name ){
     }
 }
 
+
 /*
-    Esta função existe apenas para simplificar a leitura da função negative_file() uma vez que todo o processo é realizado através da função rename().
+    Esta função funciona de maneira bastante semelhante à anterior pelo que a única coisa que quero adicionar é que para a criação de um array 
+    com a data negada utilizamos a função fgetc() que nos retorna o char naquela posição de memória e seguidamente realizamos a operação XOR
+    com 255 que faz com que os bits fiquem negados. Para além disso no fopen() seguinte utilizámos "wb" que permite escrever bit a bit no ficheiro.
+    A função rename() apenas altera o nome do ficheiro para o desejado e caso tenha sucesso retorna 0.
 */
-void changeFileName(char *input_file_name, char *output_file_name){
-    int result = rename(input_file_name, output_file_name);
-    if (result == 0) {
-        printf("The file is renamed successfully.");
-    } else {
-        printf("The file could not be renamed.");
-    }
-}
-
-
-//ESTA FUNÇÃO NÃO É FINAL DE TODO!!!! ESTA FUNÇÃO FOI ALTERADA IMENSO PELO AI! Eu ainda
-//vou escrever esta função de uma maneira que faça sentido para as nossas capacidades agora que entendo mais.
-//A original que fizemos hoje nao estava a funcionar por muitas razões e eu depois quando tiver tempo para comentar
-//tudo explico em pormenor.
 void negative_file( char *input_file_name, char *output_file_name) {
-    //LER O FICHEIRO EM BINÁRIO
-    FILE *fp = fopen(input_file_name, "rb");
+    //LEITURA DO FICHEIRO
+    FILE *fp;
+    fp = fopen(input_file_name, "rb");
     if (fp == NULL){
       perror("Error while opening the file.\n");
       exit(EXIT_FAILURE);
     }
+
+    //CALCULAR TAMANHO DO FICHEIRO
     fseek(fp, 0, SEEK_END);
     int fpL = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    // Ler o ficheiro para uma matriz de inteiros
+
+    //CRIAR ARRAY COM PRODUTO NEGADO
     int notFp[fpL];
-    for(int i = 0; i < fpL; i++){
+    for(int i=0; i<fpL; i++){
         notFp[i] = fgetc(fp) ^ 255;
     }
-    
     fclose(fp);
-    
-    // Escrever a matriz de inteiros invertidos de volta para o ficheiro original
+
+    //ESCRITA DO RESULTADO DA NEGAÇÃO
     fp = fopen(input_file_name, "wb");
     for(int i = 0; i < fpL; i++){
         fputc(notFp[i], fp);
     }
-    
+
     fclose(fp);
-    
-    // Renomear o arquivo
+
+    //MUDANÇA DE NOME DO FICHEIRO
     if (rename(input_file_name, output_file_name) != 0) {
         printf("The file could not be renamed.");
     } else {
@@ -300,8 +293,8 @@ void negative_file( char *input_file_name, char *output_file_name) {
 
 int main() {
     char teste[] = "teste.txt";
-    char teste1[] = "teste1.txt";
-    negative_file(teste, teste1);
+    char teste1[] = "teste.txt";
+    negative_file(teste1, teste1);
     //negative_file(teste1, teste);
 }
 
