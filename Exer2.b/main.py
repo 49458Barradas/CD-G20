@@ -31,9 +31,9 @@ def exer2b(path_to_file):
     ax.plot(asciiLetter, asciiCount)
     plt.show()
 
-def main():
+#def main():
     #exer2b("ListaPalavrasEN.txt")
-    exer2b("ListaPalavrasPT.txt")
+    #exer2b("ListaPalavrasPT.txt")
 
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+    #main()
