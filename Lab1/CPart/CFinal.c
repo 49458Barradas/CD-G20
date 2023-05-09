@@ -86,10 +86,16 @@ void print_bits( int val ) {
 
 void teste_print_bits(){
     int val1 = 0b10101010101010101010101010101010; //binary representation of 1431655765
+    int val11 = 1431655765;
     int val2 = 0b11111111111111111111111111111111; //binary representation of -1
+    int val22 = -1;
     int val3 = 0b00000000000000000000000000000000; //binary representation of 0
-    print_bits(val1);
+    int val33 = 0;
+    printf("%d\n", val11);
+    print_bits(val11);
+    printf("%u\n", val2);
     print_bits(val2);
+    printf("%d\n", val3);
     print_bits(val3);
 }
 
@@ -220,13 +226,13 @@ void negative_file( char *input_file_name, char *output_file_name) {
 
 void teste_negative_file(){
     //os ficheiros devem alterar entre si entre negado e nao negado
-    negative_file("teste_neg.txt", "teste_neg.txt");
-    negative_file("teste2_neg.txt", "teste2_neg.txt");
+    negative_file("alice29.txt", "alice29.txt");
+    negative_file("alice29.txt", "alice29.txt");
 }
 
 
 int main() {
-    testCountOnes();
+    testCountZeros();
     testCountOnes();
     teste_print_bits();
     teste_most_freq_symb();

@@ -29,29 +29,7 @@ def readFile(path_to_file):
         content = file.read()
     return content
 
-
-def mostFreqSymb(path_to_file): #so retorna um valor dos dois lados nem que existam multiplos valores com cena identica
-    content = readFile(path_to_file)  # leitura do ficheiro
-    asciiLetter = []  # guarda as letras/simbolos existentes na contagem
-    asciiCount = []  # guarda o número de vezes que determinado simbolo apareceu (idx partilhado entre estes 2 arrays)
-    for i in range(len(content)):
-        if content[i] in asciiLetter:
-            asciiCount[asciiLetter.index(content[i])] += 1
-        else:
-            if content[i] != ' ' and content[i] != '\n':
-                asciiLetter += [content[i]]
-                asciiCount += [1]
-    menor = len(asciiCount)-1
-    maior = -1
-    for i in range(len(asciiCount)):
-        if asciiCount[i] > asciiCount[maior]:
-            maior = i
-        if asciiCount[i] < asciiCount[menor]:
-            menor = i
-    print(f"The most frequent symbol is {asciiLetter[maior]} and it appeared {asciiCount[maior]} times.")
-    print(f"The least frequent symbol is {asciiLetter[menor]} and it appeared {asciiCount[menor]} times.")
-
-def mostFreqSymbDrained(path_to_file):
+def mostFreqSymb(path_to_file):
     content = readFile(path_to_file)
     asciiLetter = []
     asciiCount = []
@@ -89,19 +67,13 @@ def mostFreqSymbDrained(path_to_file):
 
 def exerD(path_to_file):
     if path_to_file.endswith(".bmp"):
-        # abrir o arquivo BMP
         imagem = Image.open(path_to_file)
-
-        # converter a imagem em modo escala de cinza
+        #converter a escala de cinza
         imagem = imagem.convert('L')
-
-        # obter os dados da imagem como um array numpy
         imagem_array = np.array(imagem)
-
-        # contar a frequência de cada valor de pixel na imagem
+        #freq
         pixel_values, pixel_counts = np.unique(imagem_array, return_counts=True)
-
-        # calcular a entropia
+        #entropia
         entropia = 0
         total_pixels = imagem_array.size
         for count in pixel_counts:
@@ -109,12 +81,9 @@ def exerD(path_to_file):
             print(f"o valor de informação própria de {count}: {np.log2(1/(count/len(pixel_counts)))}")
             entropia -= p * np.log2(p)
         print(f"Valor da entropia é {entropia}")
-        # plotar o histograma da imagem
         fig, ax = plt.subplots()
         ax.hist(imagem_array.flatten(), bins=256, range=(0, 255))
         plt.show()
-
-        # imprimir a entropia
         print(f"A entropia da imagem é {entropia}")
     else:
         content = readFile(path_to_file)
@@ -127,7 +96,7 @@ def exerD(path_to_file):
                 if content[i] != ' ' and content[i] != '\n':
                     asciiLetter += [content[i]]
                     asciiCount += [1]
-        #calcular da entropia
+        #entropia
         entropia = 0
         for i in range(len(asciiCount)):
             entropia += (asciiCount[i]/len(content))*np.log2(1/(asciiCount[i]/len(content)))
@@ -139,12 +108,13 @@ def exerD(path_to_file):
 
 
 def main():
-    #exerD("a.txt")
-    #exerD("alice29.txt")
-    #exerD("cp.htm")
-    exerD("lena.bmp") #AQUI EXISTE ERRO PORQUE UM FICHEIRO BMP n pode ser lido da mesma forma
-    #exerD("Person.java")
-    #exerD("progc.c")
+    mostFreqSymb()
+    exerD("a.txt")
+    exerD("alice29.txt")
+    exerD("cp.htm")
+    exerD("lena.bmp")
+    exerD("Person.java")
+    exerD("progc.c")
 
 
 if __name__ == "__main__":
