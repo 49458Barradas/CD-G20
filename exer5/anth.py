@@ -33,6 +33,7 @@ def getBER(bin_seq, output):
 
 def interleaving(str, row = 0, col = 0):
     length = len(str)
+    '''
     if row * col == 0:
         mV = int(np.ceil(np.sqrt(length)))
         mtxDim = (mV ** 2)
@@ -46,6 +47,7 @@ def interleaving(str, row = 0, col = 0):
             row = i // mV
             col = i % mV
             matrix[row, col] = mtx[i]
+        print(matrix)
         matrix = matrix.T
         lst = []
         for i in range(mtxDim):
@@ -55,54 +57,32 @@ def interleaving(str, row = 0, col = 0):
                 lst.append(matrix[rows, cols])
         return "".join(lst)
     else:
-        mtxL = row * col
-        if mtxL < length:
-            raise ValueError("str tem que ter dimensão igual ou inferior à matriz")
-        extras = mtxL - length
-        mtx = list(str)
-        while extras > 0:
-            mtx.append('')
-            extras -= 1
-        matrix = np.empty((row, col), dtype='U1')
-        for i in range(len(mtx)):
-            rows = i // col
-            cols = i % col
-            matrix[rows, cols] = mtx[i]
-        matrix = matrix.T
-        lst = []
-        for i in range(mtxL):
-            rows = i // row
-            cols = i % row
-            if matrix[rows, cols] != "":
-                lst.append(matrix[rows, cols])
-        return "".join(lst)
-
-def deInterleaving(str):
-    length = len(str)
-    mV = int(np.ceil(np.sqrt(length)))
-    mtxDim = (mV ** 2)
-    extra = mtxDim - length
+    '''
+    mtxL = row * col
+    if mtxL < length:
+        raise ValueError("str tem que ter dimensão igual ou inferior à matriz")
+    extras = mtxL - length
     mtx = list(str)
-    while extra > 0:
+    while extras > 0:
         mtx.append('')
-        extra -= 1
-    matrix = np.empty((mV, mV), dtype='U1')
+        extras -= 1
+    matrix = np.empty((row, col), dtype='U1')
     for i in range(len(mtx)):
-        row = i // mV
-        col = i % mV
-        matrix[row, col] = mtx[i]
+        rows = i // col
+        cols = i % col
+        matrix[rows, cols] = mtx[i]
     matrix = matrix.T
     lst = []
-    for i in range(mtxDim):
-        rows = i // mV
-        cols = i % mV
+    for i in range(mtxL):
+        rows = i // row
+        cols = i % row
         if matrix[rows, cols] != "":
             lst.append(matrix[rows, cols])
     return "".join(lst)
 
 def exer5bii(input, BER):
-    teste = interleaving(input)
-    print(f"Interleaving return {teste}")
+    teste = interleaving(input,8,4)
+    print(f"Interleaving returns {teste}")
     print("\n")
     seqBin = ''.join(format(ord(c), '08b') for c in teste)
     print(f"Conversão em binário {seqBin}")
@@ -110,16 +90,17 @@ def exer5bii(input, BER):
     teste1 = bsc(seqBin, BER)
     print(f"Após BSC {teste1}")
     print("\n")
-    utf = [chr(int(teste1[i:i+8], 2)) for i in range(0, len(teste1), 8)]
-    teste2 = ''.join(utf)
+    spaced_str = ' '.join([teste1[i:i + 8] for i in range(0, len(teste1), 8)])
+    teste2 = ''.join([chr(int(byte, 2)) for byte in spaced_str.split()])
     print(f"Conversão de novo a utf-8 {teste2}")
-    teste3 = deInterleaving(teste2)
+    teste3 = interleaving(teste2,4,8)
     print("\n")
     print(f"De-interleaved é {teste3}")
 
 def main():
-    input = "12345678"
-    exer5bii(input, 0.1)
+    input = "ExemploDeTransmissaoInterleaving"
+    print(f"{input} \n")
+    exer5bii(input, 0.001)
 
 if __name__ == '__main__':
     main()
