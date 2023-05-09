@@ -29,11 +29,11 @@ def gerar_arquivo_aleatorio(N, fmp, M):
     file.close()
 
 
-#def main():
-    #N = 100
-    #fmp = [0.1, 0.1, 0.1, 0.7]
-    #M = ['g', 'u', 'i', 'l']
-    #gerar_arquivo_aleatorio(N, fmp, M)
+def main():
+    N = 100
+    fmp = [0.1, 0.1, 0.1, 0.7]
+    M = ['g', 'u', 'i', 'l']
+    gerar_arquivo_aleatorio(N, fmp, M)
 
-#if __name__ == '__main__':
-    #main()
+if __name__ == '__main__':
+    main()
