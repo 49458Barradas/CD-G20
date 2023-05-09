@@ -7,7 +7,7 @@ from PIL import Image
 def geoProg(n, u, r):
     x = [0 in range(n)]
     y = [0 in range(n)]
-    for i in range(n + 1):
+    for i in range(n+1):
         x[i - 1] = i
         y[i - 1] = u * (r ** (i - 1))
     fig, ax = plt.subplots()
@@ -80,7 +80,6 @@ def exerD(path_to_file):
             p = count / total_pixels
             print(f"o valor de informação própria de {count}: {np.log2(1/(count/len(pixel_counts)))}")
             entropia -= p * np.log2(p)
-        print(f"Valor da entropia é {entropia}")
         fig, ax = plt.subplots()
         ax.hist(imagem_array.flatten(), bins=256, range=(0, 255))
         plt.show()
@@ -108,13 +107,15 @@ def exerD(path_to_file):
 
 
 def main():
-    mostFreqSymb()
+    mostFreqSymb("texto.txt")
+    mostFreqSymb("alice29.txt")
     exerD("a.txt")
     exerD("alice29.txt")
     exerD("cp.htm")
     exerD("lena.bmp")
     exerD("Person.java")
     exerD("progc.c")
+
 
 
 if __name__ == "__main__":
